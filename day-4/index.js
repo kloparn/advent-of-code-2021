@@ -50,8 +50,6 @@ const isWinningBoard = (board) => {
 
   const boards = createBoards(bingo);
 
-  //console.log(boards);
-
   const winningTicket = {};
 
   for (const drawnTicket of drawnTickets) {
@@ -63,9 +61,6 @@ const isWinningBoard = (board) => {
         for (let j = 0; j < 5; j++) {
           if (board[i][j] === drawnTicket) {
             board[i][j] = `+${board[i][j]}`;
-            //console.log(`updated a board -> ${board[i]}`);
-            //console.log(`with the index: ${i}`);
-            //console.log(`on drawnTicket: ${drawnTicket}`);
             if (isWinningBoard(board)) {
               winningTicket.drawnTicket = drawnTicket;
               winningTicket.board = board;
