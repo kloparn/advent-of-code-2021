@@ -26,7 +26,6 @@ const isWinningBoard = (board) => {
       tempArr.push(j[i]);
     }
     if (tempArr.every((num) => num.includes("+"))) {
-      console.log("vertical won!");
       return true;
     }
   }
@@ -71,7 +70,7 @@ const isWinningBoard = (board) => {
     }
   }
 
-  const sumOfNonePlusNumbers = winningTicket.board.reduce((num, curr) => {
+  let sumOfNonePlusNumbers = winningTicket.board.reduce((num, curr) => {
     const sum = curr
       .filter((e) => !e.includes("+"))
       .reduce((s, c) => {
@@ -87,6 +86,56 @@ const isWinningBoard = (board) => {
       winningTicket.drawnTicket
     } * ${sumOfNonePlusNumbers} = ${
       winningTicket.drawnTicket * sumOfNonePlusNumbers
+    }`
+  );
+
+  const winningTickets = {};
+
+  for (const drawnTicket of drawnTickets) {
+    for (const [boardIndex, board] of Object.entries(boards)) {
+      for (let i = 0; i < board.length; i++) {
+        for (let j = 0; j < 5; j++) {
+          if (board[i][j] === drawnTicket) {
+            if (!winningTickets[boardIndex]) board[i][j] = `+${board[i][j]}`;
+            if (isWinningBoard(board) && !winningTickets[boardIndex]) {
+              winningTickets[boardIndex] = {
+                drawnTicket: drawnTicket,
+                board: board,
+                winOrder: Object.keys(winningTickets).length,
+              };
+            }
+          }
+        }
+      }
+    }
+  }
+
+  sumOfNonePlusNumbers = undefined;
+  const finalTicket = {};
+  for (const wonTicked of Object.values(winningTickets)) {
+    if (wonTicked.winOrder === Object.keys(winningTickets).length - 1) {
+      finalTicket.drawnTicket = wonTicked.drawnTicket;
+
+      sumOfNonePlusNumbers = wonTicked.board.reduce((num, curr) => {
+        const sum = curr
+          .filter((e) => !e.includes("+"))
+          .reduce((s, c) => {
+            return parseInt(c) + s;
+          }, 0);
+        return parseInt(num) + parseInt(sum);
+      }, 0);
+    } else if (sumOfNonePlusNumbers) break;
+  }
+
+  console.log(finalTicket.drawnTicket);
+
+  console.log(sumOfNonePlusNumbers);
+
+  console.log(
+    `The final score is then: ${
+      finalTicket.drawnTicket
+    } * ${sumOfNonePlusNumbers} = ${
+      finalTicket.drawnTicket * sumOfNonePlusNumbers
     }`
   );
 })();
