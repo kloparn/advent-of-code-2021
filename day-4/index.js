@@ -79,10 +79,8 @@ const isWinningBoard = (board) => {
     return parseInt(num) + parseInt(sum);
   }, 0);
 
-  console.log(winningTicket);
-  console.log(sumOfNonePlusNumbers);
   console.log(
-    `The final score is then: ${
+    `The score of the first winning board is then: ${
       winningTicket.drawnTicket
     } * ${sumOfNonePlusNumbers} = ${
       winningTicket.drawnTicket * sumOfNonePlusNumbers
@@ -127,12 +125,8 @@ const isWinningBoard = (board) => {
     } else if (sumOfNonePlusNumbers) break;
   }
 
-  console.log(finalTicket.drawnTicket);
-
-  console.log(sumOfNonePlusNumbers);
-
   console.log(
-    `The final score is then: ${
+    `The score for the last winning board is then: ${
       finalTicket.drawnTicket
     } * ${sumOfNonePlusNumbers} = ${
       finalTicket.drawnTicket * sumOfNonePlusNumbers
