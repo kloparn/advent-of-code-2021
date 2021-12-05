@@ -1,3 +1,4 @@
+const { fchownSync } = require("fs");
 const fs = require("fs/promises");
 
 const hydrothermalVentsInfo = () =>
@@ -12,11 +13,11 @@ const getSmallAndBig = (x, y) => {
 };
 
 const filterNonEqualPoints = (points) => {
-  const removedUnequalPoints = points.reduce((points, curr) => {
+  const removedUnequalPoints = points.reduce((filteredPoints, curr) => {
     const [X, Y] = curr.split("->");
     const [xX, xY] = splitPoints(X);
     const [yX, yY] = splitPoints(Y);
-    return xX === yX || xY === yY ? points.concat(curr) : points;
+    return xX === yX || xY === yY ? filteredPoints.concat(curr) : filteredPoints;
   }, []);
 
   return removedUnequalPoints;
@@ -54,7 +55,7 @@ const fillDiagram = (emptyDiagram, points) => {
       let [small, big] = getSmallAndBig(xX, yX);
       const yPosition = xY; // could also pick yY.;
 
-      for (small; small < big; small++) {
+      for (small; small <= big; small++) {
         if (isNaN(diagram[yPosition][small])) {
           diagram[yPosition][small] = 1;
         } else {
@@ -66,20 +67,28 @@ const fillDiagram = (emptyDiagram, points) => {
       let [small, big] = getSmallAndBig(xY, yY);
       const xPosition = xX; // could also pick yX.
 
-      for (small; small < big; small++) {
+      for (small; small <= big; small++) {
         if (isNaN(diagram[small][xPosition])) {
           diagram[small][xPosition] = 1;
         } else {
           diagram[small][xPosition]++;
         }
       }
-    } else {
-      console.log("something else: ", X, "->", Y);
     }
 
     return diagram;
   }, []);
   return filledDiagram;
+};
+
+const findDangerousZones = (diagram) => {
+  const dangerousZones = diagram.reduce((dangerNum, zone) => {
+    const dangerZones = zone.reduce((nmr, curr) => {
+      return curr > 1 ? ++nmr : nmr;
+    }, 0);
+    return dangerNum + dangerZones;
+  }, 0);
+  return dangerousZones;
 };
 
 (async () => {
@@ -93,7 +102,9 @@ const fillDiagram = (emptyDiagram, points) => {
 
   const filledDiagram = fillDiagram(diagram, equalHydroVentPaths);
 
-  console.log(filledDiagram);
+  const dangerousZones = findDangerousZones(filledDiagram);
+  //console.log(filledDiagram);
+  console.log(dangerousZones);
 
   // --------------------------------------------- //
 })();
