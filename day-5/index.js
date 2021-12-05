@@ -31,21 +31,20 @@ const createDiagram = (data) => {
     return xY >= yY ? (xY >= bigNum ? xY : bigNum) : yY >= bigNum ? yY : bigNum;
   }, 0);
 
-  const dotArr = [];
-
   for (let i = 0; i <= biggestNumber; i++) {
-    dotArr.push(".");
-  }
-
-  for (let i = 0; i <= biggestNumber; i++) {
+    let dotArr = [];
+    for (let i = 0; i <= biggestNumber; i++) {
+      dotArr.push(".");
+    }
     diagram.push(dotArr);
   }
 
   return diagram;
 };
 
-const fillDiagram = (diagram, points) => {
-  const filledDiagram = points.reduce((_, curr) => {
+const fillDiagram = (emptyDiagram, points) => {
+  const filledDiagram = points.reduce((diagram, curr) => {
+    if (diagram.length === 0) diagram = emptyDiagram;
     const [X, Y] = curr.split("->");
     const [xX, xY] = splitPoints(X);
     const [yX, yY] = splitPoints(Y);
@@ -53,17 +52,14 @@ const fillDiagram = (diagram, points) => {
     if (xX !== yX) {
       console.log("xX is not same as yX: ", X, "->", Y);
       let [small, big] = getSmallAndBig(xX, yX);
-      const yPosition = xY; // could also pick yY.
-      console.log(yPosition);
+      const yPosition = xY; // could also pick yY.;
 
       for (small; small < big; small++) {
         if (isNaN(diagram[yPosition][small])) {
           diagram[yPosition][small] = 1;
-          console.log(diagram);
         } else {
           diagram[yPosition][small]++;
         }
-        //console.log(diagram);
       }
     } else if (xY !== yY) {
       console.log("xY is not same as yY: ", X, "->", Y);
@@ -77,6 +73,8 @@ const fillDiagram = (diagram, points) => {
           diagram[small][xPosition]++;
         }
       }
+    } else {
+      console.log("something else: ", X, "->", Y);
     }
 
     return diagram;
@@ -90,6 +88,7 @@ const fillDiagram = (diagram, points) => {
   // Part 1
   // --------------------------------------------- //
   const equalHydroVentPaths = filterNonEqualPoints(hydroVentInfo);
+
   const diagram = createDiagram(hydroVentInfo);
 
   const filledDiagram = fillDiagram(diagram, equalHydroVentPaths);
