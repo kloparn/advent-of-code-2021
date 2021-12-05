@@ -3,10 +3,14 @@ const fs = require("fs/promises");
 const hydrothermalVentsInfo = () =>
   fs.readFile("input.txt", "utf-8").then((data) => data.split("\n").map((e) => e.replace("\r", "")));
 
+const splitPoints = (points) => points.split(",");
+
 const filterNonEqualPoints = (points) => {
   const removedUnequalPoints = points.reduce((points, curr) => {
     const [X, Y] = curr.split("->");
-    return X[0] === Y[0] || X[2] === Y[2] ? points.concat(curr) : points;
+    const [xX, xY] = splitPoints(X);
+    const [yX, yY] = splitPoints(Y); 
+    return xX === yX || xY === yY ? points.concat(curr) : points;
   }, []);
 
   return removedUnequalPoints;
@@ -16,8 +20,8 @@ const createDiagram = (data) => {
   const diagram = [];
   const biggestNumber = data.reduce((bigNum, curr) => {
     const [X, Y] = curr.split("->");
-    const xY = X.split(",")[1]; // Y for the first pos
-    const yY = Y.split(",")[1]; // Y for the second pos
+    const [, xY] = splitPoints(X);
+    const [, yY] = splitPoints(Y); 
     return xY >= yY ? (xY >= bigNum ? xY : bigNum) : yY >= bigNum ? yY : bigNum;
   }, 0);
 
@@ -37,11 +41,13 @@ const createDiagram = (data) => {
 const fillDiagram = (diagram, points) => {
   const filledDiagram = points.reduce((_, curr) => {
     const [X, Y] = curr.split("->");
-    const xXY = X.split(","); // Y for the first pos
-    const yXY = Y.split(","); // Y for the second pos
+    const [xX, xY] = splitPoints(X);
+    const [yX, yY] = splitPoints(Y); 
 
-    if (xXY[0] !== yXY[0]) {
-    } else if (xXY[2] !== yXY[2]) {
+    if (xX !== yX) {
+      console.log("xX is not same as yX: ", X, "->", Y);
+    } else if (xY !== yY) {
+      console.log("xY is not same as yY: ", X, "->", Y);
     } else {
       console.log("both are the same: ", X, "->", Y);
     }
@@ -61,7 +67,7 @@ const fillDiagram = (diagram, points) => {
 
   const filledDiagram = fillDiagram(diagram, equalHydroVentPaths);
 
-  console.log(filledDiagram);
+  //console.log(filledDiagram);
 
   // --------------------------------------------- //
 })();
